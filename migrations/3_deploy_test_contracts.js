@@ -45,13 +45,13 @@ module.exports = (deployer, network, accounts) => {
             await tokenRegistry.setTokenAddress("MKR", dummyMKRToken.address,
                 { from: accounts[0] });
 
-            const dummyZRXToken = await DummyToken.new(
-                "0x Token",
-                "ZRX",
+            const dummyDAIToken = await DummyToken.new(
+                "Dai",
+                "DAI",
                 DUMMY_TOKEN_DECIMALS,
                 DUMMY_TOKEN_SUPPLY,
             );
-            await tokenRegistry.setTokenAddress("ZRX", dummyZRXToken.address,
+            await tokenRegistry.setTokenAddress("DAI", dummyDAIToken.address,
                 { from: accounts[0] });
         });
     } // TODO Add some sort of linking for live tokens to token registry

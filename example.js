@@ -19,13 +19,12 @@ ABIDecoder.addABI(RepaymentRouter.abi);
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 const debtOrder = {
-    "principalAmount": 10,
-    "principalTokenSymbol": "ZRX",
-    "interestRate": "13",
+    "principalAmount": Math.floor(Math.random() * 101),
+    "principalTokenSymbol": "DAI",
+    "interestRate": "11",
     "amortizationUnit": "hours",
-    "termLength": "100",
-    "description": "Hello, Can I borrow some REP please?",
-    "repaymentAmount": 4
+    "termLength": "111",
+    "description": "Hello, Can I borrow some DAI please?"
 }
 
 if (web3.isConnected()) {
@@ -43,23 +42,28 @@ async function test() {
         interestRate: new BigNumber(debtOrder.interestRate),
         amortizationUnit: debtOrder.amortizationUnit,
         termLength: new BigNumber(debtOrder.termLength),
-        debtor: defaultAccount,
-        creditor: defaultAccount,
-        relayer: defaultAccount
-        //relayerFee: 
     };
 
     const dharmaDebtOrder = await dharma.adapters.simpleInterestLoan.toDebtOrder(simpleInterestLoan);
 	dharmaDebtOrder.debtor = defaultAccount;
-    dharmaDebtOrder.creditor = defaultAccount;
+
+    console.log('Debt order created: ' + JSON.stringify(dharmaDebtOrder, null, 2) + '\n')
     
     // Set the token allowance to unlimited
-	await dharma.token.setUnlimitedProxyAllowanceAsync(principalToken);
+    let tx = await dharma.token.setUnlimitedProxyAllowanceAsync(principalToken);
+    
+    const balance = await dharma.token.getBalanceAsync(principalToken, defaultAccount)
+    const allowance = await dharma.token.getBalanceAsync(principalToken, defaultAccount)
+    
+    
+    console.log("Allowance updated: " + allowance.toNumber() + '\n')
 
     dharmaDebtOrder.underwriter = defaultAccount;
     dharmaDebtOrder.underwriterFee = new BigNumber(1);
     dharmaDebtOrder.underwriterRiskRating = new BigNumber(999);
     dharmaDebtOrder.underwriterSignature = await dharma.sign.asUnderwriter(dharmaDebtOrder);
+
+    console.log('Debt order signed by underwriter: ' + JSON.stringify(dharmaDebtOrder, null, 2) + '\n')
     
     // hardcoded
     dharmaDebtOrder.relayer = defaultAccount;
@@ -68,12 +72,15 @@ async function test() {
     dharmaDebtOrder.debtorFee = new BigNumber(1);
     dharmaDebtOrder.creditorFee = new BigNumber(2);
     dharmaDebtOrder.debtorSignature = await dharma.sign.asDebtor(dharmaDebtOrder);
+
+    console.log('Debt order signed by debtor: ' + JSON.stringify(dharmaDebtOrder, null, 2) + '\n')
     
+    dharmaDebtOrder.creditor = defaultAccount;
     const txHash = await dharma.order.fillAsync(dharmaDebtOrder, {from: dharmaDebtOrder.creditor});
 	const receipt = await promisify(web3.eth.getTransactionReceipt)(txHash);
     const [debtOrderFilledLog] = compact(ABIDecoder.decodeLogs(receipt.logs));
     
-    console.log(debtOrderFilledLog)
+    console.log('Debt order filled by creditor: ' + JSON.stringify(debtOrderFilledLog, null, 2) + '\n')
 }
 
 async function instantiateDharma() {
