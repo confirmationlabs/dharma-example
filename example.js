@@ -4,6 +4,8 @@ const ABIDecoder = require('abi-decoder');
 const promisify = require('tiny-promisify');
 const BigNumber = require('bignumber.js');
 const compact = require('lodash.compact');
+const request = require('request-json');
+const client = request.createClient('http://dharma-relayer-api-62685026.us-east-1.elb.amazonaws.com/');
 
 const DebtRegistry = require('./build/contracts/DebtRegistry.json')
 const DebtKernel = require('./build/contracts/DebtKernel.json')
@@ -29,8 +31,8 @@ async function test() {
     const principalToken = await tokenRegistry.getTokenAddressBySymbol.callAsync(principalTokenSymbol)
 
     // Set the token allowance to unlimited
-    let tx = await dharma.token.setUnlimitedProxyAllowanceAsync(principalToken)
-    await dharma.blockchain.awaitTransactionMinedAsync(tx, 1000, 60000)
+    // let tx = await dharma.token.setUnlimitedProxyAllowanceAsync(principalToken)
+    // await dharma.blockchain.awaitTransactionMinedAsync(tx, 1000, 60000)
 
     const simpleInterestLoan = {
         principalToken,
@@ -40,7 +42,6 @@ async function test() {
         amortizationUnit: "hours",
         termLength: new BigNumber(Math.floor(Math.random() * 101)),
         debtor: defaultAccount,
-        description: "Hello, Can I borrow some DAI please?",
 
         // hardcoded
         relayer: defaultAccount,
@@ -51,7 +52,7 @@ async function test() {
     };
 
     // Convert to protocol format
-    const dharmaDebtOrder = await dharma.adapters.simpleInterestLoan.toDebtOrder(simpleInterestLoan);
+    var dharmaDebtOrder = await dharma.adapters.simpleInterestLoan.toDebtOrder(simpleInterestLoan);
     console.log('Debt order created: ' + JSON.stringify(dharmaDebtOrder, null, 2) + '\n')
 
     const balance = await dharma.token.getBalanceAsync(principalToken, defaultAccount)
@@ -63,6 +64,42 @@ async function test() {
     dharmaDebtOrder.debtorSignature = await dharma.sign.asDebtor(dharmaDebtOrder)
     console.log('Debt order signed by debtor: ' + JSON.stringify(dharmaDebtOrder, null, 2) + '\n')
 
+    // Post order to the Relayer
+    var data = {
+        kernelAddress: dharmaDebtOrder.kernelVersion,
+        repaymentRouterAddress: dharmaDebtOrder.issuanceVersion,
+        principalAmount: dharmaDebtOrder.principalAmount,
+        principalTokenAddress: dharmaDebtOrder.principalToken,
+        debtorAddress: dharmaDebtOrder.debtor,
+        debtorFee: dharmaDebtOrder.debtorFee,
+        termsContractAddress: dharmaDebtOrder.termsContract,
+        termsContractParameters: dharmaDebtOrder.termsContractParameters,
+        expirationTime: new Date(dharmaDebtOrder.expirationTimestampInSec.mul(1000).toNumber()).toISOString(),
+        salt: dharmaDebtOrder.salt,
+        debtorSignature: web3.toHex(dharmaDebtOrder.debtorSignature),
+    }
+
+    var response = await client.post('/api/v0/debts', data)
+
+    // Retrieve order from relayer
+    var relayerOrder = (await client.get('/api/v0/debts/' + response.body.id)).body
+    dharmaDebtOrder = {
+        kernelVersion: relayerOrder.kernelAddress,
+        issuanceVersion: relayerOrder.repaymentRouterAddress,
+        principalAmount: new BigNumber(relayerOrder.principalAmount),
+        principalToken: relayerOrder.principalTokenAddress,
+        debtor: relayerOrder.debtorAddress,
+        debtorFee: new BigNumber(relayerOrder.debtorFee),
+        termsContract: relayerOrder.termsContractAddress,
+        termsContractParameters: relayerOrder.termsContractParameters,
+        expirationTimestampInSec: new BigNumber(new Date(relayerOrder.expirationTime).getTime() / 1000),
+        salt: new BigNumber(relayerOrder.salt),
+        debtorSignature: web3.fromAscii(relayerOrder.debtorSignature),
+        relayer: relayerOrder.relayerAddress,
+        relayerFee: new BigNumber(relayerOrder.relayerFee)
+    }
+
+    // Fill debt order
     const creditor = defaultAccount;
     dharmaDebtOrder.creditor = creditor;
     const txHash = await dharma.order.fillAsync(dharmaDebtOrder, { from: creditor });
