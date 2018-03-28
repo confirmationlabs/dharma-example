@@ -31,8 +31,8 @@ async function test() {
     const principalToken = await tokenRegistry.getTokenAddressBySymbol.callAsync(principalTokenSymbol)
 
     // Set the token allowance to unlimited
-    // let tx = await dharma.token.setUnlimitedProxyAllowanceAsync(principalToken)
-    // await dharma.blockchain.awaitTransactionMinedAsync(tx, 1000, 60000)
+    let tx = await dharma.token.setUnlimitedProxyAllowanceAsync(principalToken)
+    await dharma.blockchain.awaitTransactionMinedAsync(tx, 1000, 60000)
 
     const simpleInterestLoan = {
         principalToken,
