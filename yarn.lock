@@ -2,10 +2,19 @@
 # yarn lockfile v1
 
 
-"@dharmaprotocol/dharma.js@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@dharmaprotocol/dharma.js/-/dharma.js-0.0.14.tgz#017ef2213c07d233bb9fda514d673b4462378ec4"
+"@dharmaprotocol/contracts@0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@dharmaprotocol/contracts/-/contracts-0.0.24.tgz#146f86be1e5f1548f07a82dfdaeb40ae1fba7630"
   dependencies:
+    NonFungibleToken "https://github.com/dharmaprotocol/NonFungibleToken.git"
+    zeppelin-solidity "^1.6.0"
+
+"@dharmaprotocol/dharma.js@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@dharmaprotocol/dharma.js/-/dharma.js-0.0.30.tgz#693185bf08c2808d0e73df40e63ee377b1ae8777"
+  dependencies:
+    "@dharmaprotocol/contracts" "0.0.24"
+    "@types/lodash" "^4.14.104"
     bignumber.js "^5.0.0"
     ethereumjs-util "^5.1.4"
     jsonschema "^1.2.2"
@@ -14,6 +23,7 @@
     lodash.isfunction "^3.0.9"
     lodash.isobject "^3.0.2"
     lodash.isundefined "^3.0.1"
+    lodash.map "^4.6.0"
     lodash.omit "^4.5.0"
     lodash.pickby "^4.6.0"
     lodash.values "^4.3.0"
@@ -29,6 +39,10 @@
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
+"@types/lodash@^4.14.104":
+  version "4.14.106"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.106.tgz#6093e9a02aa567ddecfe9afadca89e53e5dce4dd"
+
 JSONStream@^1.0.3:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.2.tgz#c102371b6ec3a7cf3b847ca00c20bb0fce4c6dea"
@@ -39,6 +53,13 @@ JSONStream@^1.0.3:
 "NonFungibleToken@https://github.com/dharmaprotocol/NonFungibleToken":
   version "0.0.1"
   resolved "https://github.com/dharmaprotocol/NonFungibleToken#162e8609569654630a5a5ef3bbbe5e0ebbe90f1d"
+  dependencies:
+    abi-decoder "^1.0.9"
+    zeppelin-solidity "^1.4.0"
+
+"NonFungibleToken@https://github.com/dharmaprotocol/NonFungibleToken.git":
+  version "0.0.1"
+  resolved "https://github.com/dharmaprotocol/NonFungibleToken.git#162e8609569654630a5a5ef3bbbe5e0ebbe90f1d"
   dependencies:
     abi-decoder "^1.0.9"
     zeppelin-solidity "^1.4.0"
@@ -2708,7 +2729,7 @@ depd@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.1.tgz#5783b4e1c459f06fa5ca27f991f3d06e7a310359"
 
-depd@~1.1.1, depd@~1.1.2:
+depd@1.1.2, depd@~1.1.1, depd@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
 
@@ -5731,6 +5752,10 @@ lodash.keys@^3.0.0:
     lodash.isarguments "^3.0.0"
     lodash.isarray "^3.0.0"
 
+lodash.map@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.map/-/lodash.map-4.6.0.tgz#771ec7839e3473d9c4cde28b19394c3562f4f6d3"
+
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -7766,6 +7791,13 @@ replace-ext@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/replace-ext/-/replace-ext-1.0.0.tgz#de63128373fcbf7c3ccfa4de5a480c45a67958eb"
 
+request-json@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/request-json/-/request-json-0.6.3.tgz#c22fa028cb360d13214e81c7d58e569e2079b595"
+  dependencies:
+    depd "1.1.2"
+    request "2.83.0"
+
 request@2, request@^2.61.0, request@^2.67.0, request@^2.79.0:
   version "2.85.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.85.0.tgz#5a03615a47c61420b3eb99b7dba204f83603e1fa"
@@ -7819,6 +7851,33 @@ request@2.81.0:
     tough-cookie "~2.3.0"
     tunnel-agent "^0.6.0"
     uuid "^3.0.0"
+
+request@2.83.0:
+  version "2.83.0"
+  resolved "https://registry.yarnpkg.com/request/-/request-2.83.0.tgz#ca0b65da02ed62935887808e6f510381034e3356"
+  dependencies:
+    aws-sign2 "~0.7.0"
+    aws4 "^1.6.0"
+    caseless "~0.12.0"
+    combined-stream "~1.0.5"
+    extend "~3.0.1"
+    forever-agent "~0.6.1"
+    form-data "~2.3.1"
+    har-validator "~5.0.3"
+    hawk "~6.0.2"
+    http-signature "~1.2.0"
+    is-typedarray "~1.0.0"
+    isstream "~0.1.2"
+    json-stringify-safe "~5.0.1"
+    mime-types "~2.1.17"
+    oauth-sign "~0.8.2"
+    performance-now "^2.1.0"
+    qs "~6.5.1"
+    safe-buffer "^5.1.1"
+    stringstream "~0.0.5"
+    tough-cookie "~2.3.3"
+    tunnel-agent "^0.6.0"
+    uuid "^3.1.0"
 
 require-directory@^2.1.1:
   version "2.1.1"

@@ -69,57 +69,43 @@ contract MockTermsContract is MockContract {
         ));
     }
 
-    function registerNFTRepayment(
+    function registerTermStart(
         bytes32 agreementId,
-        address payer,
-        address beneficiary,
-        uint tokenId,
-        address tokenAddress
+        address debtor
     )
         public
-        returns (bool _success)
+        returns (bool _registered)
     {
-        functionCalledWithArgs("registerNFTRepayment", keccak256(
-            agreementId,
-            payer,
-            beneficiary,
-            tokenId,
-            tokenAddress
-        ));
+        functionCalledWithArgs("registerTermStart", keccak256(agreementId, debtor));
 
-        return getMockReturnValue("registerNFTRepayment", DEFAULT_SIGNATURE_ARGS) == bytes32(1);
+        return getMockReturnValue(
+            "registerTermStart",
+            keccak256(agreementId, debtor)
+        ) == bytes32(1);
     }
 
-    function mockRegisterNFTRepaymentReturnValue(bool success)
+    function mockRegisterTermStartReturnValue(bytes32 agreementId, address debtor, bool success)
         public
     {
-        mockReturnValue("registerNFTRepayment", DEFAULT_SIGNATURE_ARGS, success ? bytes32(1) : bytes32(0));
+        mockReturnValue(
+            "registerTermStart",
+            keccak256(agreementId, debtor),
+            success ? bytes32(1) : bytes32(0)
+        );
     }
 
-    function wasRegisterNFTRepaymentCalledWith(
-        bytes32 agreementId,
-        address payer,
-        address beneficiary,
-        uint tokenId,
-        address tokenAddress
-    )
+    function wasRegisterTermStartCalledWith(bytes32 agreementId, address debtor)
         public
         view
-        returns (bool wasCalled)
+        returns (bool _wasCalled)
     {
-        return wasFunctionCalledWithArgs("registerNFTRepayment", keccak256(
-            agreementId,
-            payer,
-            beneficiary,
-            tokenId,
-            tokenAddress
-        ));
+        return wasFunctionCalledWithArgs("registerTermStart", keccak256(agreementId, debtor));
     }
 
     function getFunctionList()
         internal
         returns (string[10] functionNames)
     {
-        return ["registerRepayment", "registerNFTRepayment", "", "", "", "", "", "", "", ""];
+        return ["registerRepayment", "registerTermStart", "", "", "", "", "", "", "", ""];
     }
 }
