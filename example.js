@@ -5,7 +5,7 @@ const promisify = require('tiny-promisify');
 const BigNumber = require('bignumber.js');
 const compact = require('lodash.compact');
 const request = require('request-json');
-const client = request.createClient('http://dharma-relayer-api-62685026.us-east-1.elb.amazonaws.com/');
+const client = request.createClient('http://dharma-relayer-prod-993135204.us-east-1.elb.amazonaws.com/');
 
 const DebtRegistry = require('./build/contracts/DebtRegistry.json')
 const DebtKernel = require('./build/contracts/DebtKernel.json')
@@ -98,6 +98,9 @@ async function test() {
         relayer: relayerOrder.relayerAddress,
         relayerFee: new BigNumber(relayerOrder.relayerFee)
     }
+
+    // Parse debt order
+    const parsedOrder = await dharma.adapters.simpleInterestLoan.fromDebtOrder(dharmaDebtOrder)
 
     // Fill debt order
     const creditor = defaultAccount;
