@@ -30,8 +30,7 @@ async function test() {
     const principalTokenSymbol = "DAI"
     const principalToken = await tokenRegistry.getTokenAddressBySymbol.callAsync(principalTokenSymbol)
     const debtor = web3.eth.accounts[0]
-    const creditor = '0xb1a6E68329199b818b37eEC95cC9faD58cE32b9A'//web3.eth.accounts[1]
-
+    const creditor = debtor
     const simpleInterestLoan = {
         principalToken,
         principalTokenSymbol,
@@ -56,6 +55,9 @@ async function test() {
             "s": "",
             "v": 0
         },
+
+        relayer: '0x0000000000000000000000000000000000000000',
+        relayerFee: new BigNumber(0),
 
         salt: new BigNumber(Math.floor(Math.random() * 100000))
     };
@@ -90,6 +92,8 @@ async function test() {
         underwriterRiskRating: dharmaDebtOrder.underwriterRiskRating,
         underwriterFee: dharmaDebtOrder.underwriterFee,
         underwriterSignature: JSON.stringify(dharmaDebtOrder.underwriterSignature),
+        relayerAddress: dharmaDebtOrder.relayer,
+        relayerFee: dharmaDebtOrder.relayerFee
     }
 
     var response = await client.post('/api/v0/debts', data)
@@ -115,6 +119,8 @@ async function test() {
         underwriterRiskRating: new BigNumber(relayerOrder.underwriterRiskRating),
         underwriterFee: new BigNumber(relayerOrder.underwriterFee),
         underwriterSignature: JSON.parse(relayerOrder.underwriterSignature),
+        relayer: relayerOrder.relayerAddress,
+        relayerFee: new BigNumber(relayerOrder.relayerFee)
     }
 
     console.log("SIGN: " + JSON.stringify(dharmaDebtOrder.debtorSignature, null, 2) + '\n')
