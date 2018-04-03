@@ -10,11 +10,11 @@ function convertToRelayer(plexDebtOrder) {
         termsContractParameters: plexDebtOrder.termsContractParameters,
         expirationTime: new Date(plexDebtOrder.expirationTimestampInSec * 1000).toISOString(),
         salt: plexDebtOrder.salt,
-        debtorSignature: JSON.stringify(plexDebtOrder.debtorSignature),
+        debtorSignature: plexDebtOrder.debtorSignature,
         underwriterAddress: plexDebtOrder.underwriter,
         underwriterRiskRating: plexDebtOrder.underwriterRiskRating,
         underwriterFee: plexDebtOrder.underwriterFee,
-        underwriterSignature: JSON.stringify(plexDebtOrder.underwriterSignature),
+        underwriterSignature: plexDebtOrder.underwriterSignature,
         relayerAddress: plexDebtOrder.relayer,
         relayerFee: plexDebtOrder.relayerFee,
         description: plexDebtOrder.description
